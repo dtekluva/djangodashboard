@@ -5,12 +5,12 @@
         
         <div class="logo">
           <a target="_blank" 
-             href="https://www.creative-tim.com/product/black-dashboard-django" class="simple-text logo-mini">
-            BD
+             href="/" class="simple-text logo-mini">
+             01
           </a>
           <a target="_blank" 
-             href="https://www.creative-tim.com/product/black-dashboard-django" class="simple-text logo-normal">
-            Django Dashboard
+             href="" class="simple-text logo-normal">
+             {{ request.user.username }}'s Tracker 
           </a>
         </div>
 
@@ -22,7 +22,13 @@
               <p>Dashboard</p>
             </a>
           </li>
-          <li class="{% if 'icons' in segment %} active {% endif %}">
+          <li class="{% if 'member' in segment %} active {% endif %} ">
+            <a href="/add_member.html">
+              <i class="tim-icons icon-badge"></i>
+              <p>Members</p>
+            </a>
+          </li>
+          <!-- <li class="{% if 'icons' in segment %} active {% endif %}">
             <a href="/ui-icons.html">
               <i class="tim-icons icon-atom"></i>
               <p>Icons</p>
@@ -63,7 +69,7 @@
               <i class="tim-icons icon-world"></i>
               <p>RTL Support</p>
             </a>
-          </li>
+          </li> -->
           <li>
             <a href="{% url 'logout' %}" >
               <i class="tim-icons icon-user-run"></i>

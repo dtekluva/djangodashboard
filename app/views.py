@@ -3,11 +3,15 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
+from django.http.response import JsonResponse
+from app.models import Member
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import loader
 from django.http import HttpResponse
 from django import template
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 @login_required(login_url="/login/")
 def index(request):
@@ -40,3 +44,49 @@ def pages(request):
     
         html_template = loader.get_template( 'page-500.html' )
         return HttpResponse(html_template.render(context, request))
+
+@csrf_exempt
+@login_required(login_url="/login/")
+def add_member(request):
+    context = {}
+    # All resource paths end in .html.
+    # Pick out the html file name from the url. And load that template.
+    try:
+
+        if request.method == 'POST': # If the form has been submitted...
+            
+            data = json.loads(request.body) 
+
+            response = Member.add_member(**data)     
+            
+            return JsonResponse(response, status=200)
+        
+    except:
+
+        return JsonResponse(response, status=500)
+
+
+@csrf_exempt
+@login_required(login_url="/login/")
+def populate_members(request):
+    context = {}
+    # All resource paths end in .html.
+    # Pick out the html file name from the url. And load that template.
+    try:
+
+        if request.method == 'GET': # If the form has been submitted...
+            
+            all_members = Member.get_all()
+
+            return JsonResponse({
+                                    "all_members": all_members,
+                                    "status": True
+                                }, 
+                                status=200)
+        
+    except SyntaxError:
+
+        return JsonResponse({
+                                    "all_members": "",
+                                    "status": False
+                                }, status=500)

@@ -1,0 +1,248 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Page User {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="title">Edit Profile</h5>
+      </div>
+      <div class="card-body">
+        <form onsubmit="post(event)" id="form">
+          <div class="row">
+            <div class="col-md-6 pr-md-1">
+              <div class="form-group">
+                <label>First Name</label>
+                <input id="first_name" type="text" class="form-control">
+              </div>
+            </div>
+            <div class="col-md-6 pl-md-1">
+              <div class="form-group">
+                <label>Last Name</label>
+                <input id="last_name" type="text" class="form-control">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 pr-md-1">
+              <div class="form-group">
+                <label for="exampleInputEmail1">Email address</label>
+                <input id="email" type="email" class="form-control" value="{{ request.user.email }}">
+              </div>
+            </div>
+            <div class="col-md-6 pl-md-1">
+              <div class="form-group">
+                <label for="exampleInputEmail1">Phone Number</label>
+                <input id="phone" type="phone" class="form-control" value="{{ request.user.email }}">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <label>Address</label>
+                <input id="address" type="text" class="form-control" placeholder="Home Address" value="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 pr-md-1">
+              <div class="form-group">
+                <label>City</label>
+                <input id="city" type="text" class="form-control" placeholder="City" value="Mike">
+              </div>
+            </div>
+            <div class="col-md-4 px-md-1">
+              <div class="form-group">
+                <label>Country</label>
+                <input id="country" type="text" class="form-control" placeholder="Country" value="Andrew">
+              </div>
+            </div>
+            <div class="col-md-4 pl-md-1">
+              <div class="form-group">
+                <label>Postal Code (disabled)</label>
+                <input disabled="" type="number" class="form-control" placeholder="ZIP Code">
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <button type="submit" class="btn btn-fill btn-primary">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card card-user">
+      <div class="card-body">
+        <p class="card-text">
+          <div class="author">
+            <div class="block block-one"></div>
+            <div class="block block-two"></div>
+            <div class="block block-three"></div>
+            <div class="block block-four"></div>
+            <a href="javascript:void(0)">
+              <!-- <img class="avatar" src="/static/assets/img/emilyz.jpg" alt="..."> -->
+              <h5 class="title">
+                {{ request.user.username }}
+              </h5>
+            </a>
+            <p class="description">
+              {{ request.user.email }}
+            </p>
+          </div>
+        </p>
+        <div class="card-description">
+          Welcome to the platform for member payment and balance tracking, you are currently looking at the add member page.
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="button-container">
+          <button href="javascript:void(0)" class="btn btn-icon btn-round btn-facebook">
+            <i class="fab fa-facebook"></i>
+          </button>
+          <button href="javascript:void(0)" class="btn btn-icon btn-round btn-twitter">
+            <i class="fab fa-twitter"></i>
+          </button>
+          <button href="javascript:void(0)" class="btn btn-icon btn-round btn-google">
+            <i class="fab fa-google-plus"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-12">
+    <div class="card ">
+      <div class="card-header">
+        <h4 class="card-title"> Simple Table</h4>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table tablesorter " id="">
+            <thead class=" text-primary">
+              <tr>
+                <th>
+                  Name
+                </th>
+                <th>
+                  Email
+                </th>
+                <th>
+                  Last Transaction
+                </th>
+                <th>
+                  Date
+                </th>
+                <th class="text-center">
+                  Balance
+                </th>
+              </tr>
+            </thead>
+            <tbody id="member_table">
+              
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+
+  const post = ((event)=>{
+
+    event.preventDefault();
+
+    first_name = document.getElementById("first_name").value;
+    last_name  = document.getElementById("last_name").value;
+    email      = document.getElementById("email").value;
+    phone      = document.getElementById("phone").value;
+    address    = document.getElementById("address").value;
+    city       = document.getElementById("city").value;
+    country    = document.getElementById("country").value;
+
+    let formData = {};
+    formData['first_name'] = first_name;
+    formData['last_name'] = last_name;
+    formData['email'] = email;
+    formData['phone'] = phone;
+    formData['address'] = address;
+    formData['city'] = city;
+    formData['country'] = country;
+
+    console.log(formData);
+
+    fetch("add_member",
+        {
+            body: JSON.stringify(formData),
+            method: "post"
+        })
+        .then((resp) => resp.json())
+        .then(function(data) {
+          console.log(data)
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    })
+  
+    const load_members = (()=>{
+
+      fetch("populate_members",
+          {
+              method: "get"
+          })
+          .then((resp) => resp.json())
+          .then(function(data) {
+            console.log(data.all_members.data);
+            let table_data = ""
+
+            data.all_members.data.forEach((element)=>{
+                table_data += `
+                                <tr>
+                                <td>
+                                  ${element.name}
+                                </td>
+                                <td>
+                                  ${element.email}
+                                </td>
+                                <td>
+                                  ${element.last_transaction.amount}
+                                </td>
+                                <td>
+                                  ${element.last_transaction.date}
+                                </td>
+                                <td class="text-center">
+                                  ${element.balance}
+                                </td>
+                              </tr>
+                              `;
+            });
+
+            document.getElementById("member_table").innerHTML += table_data;
+            console.log(table_data);
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
+    });
+
+    load_members();
+</script>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+
+
+{% block javascripts %}{% endblock javascripts %}
