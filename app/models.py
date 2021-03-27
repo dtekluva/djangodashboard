@@ -98,6 +98,26 @@ class Member(models.Model):
                     data = list(member_values)
                     )
 
+    @staticmethod
+    def get_single(id):
+
+        target_member = Member.objects.get(id = id)
+
+        member_values = dict(
+                                id = target_member.id,
+                                first_name = target_member.user.first_name,
+                                last_name  = target_member.user.last_name,
+                                email = target_member.user.email,
+                                address = target_member.address,
+                                city = target_member.city,
+                                phone = target_member.phone_number,
+                                country = target_member.country,
+                                balance = target_member.get_balance(),
+                                last_transaction = target_member.get_last_transaction()
+                            )
+        
+        return member_values
+
     def get_last_transaction(self):
         
         ordered_transaction = self.transaction_set.all().order_by("-date")
@@ -191,3 +211,28 @@ class Transaction(models.Model):
         return dict(
                     data = list(transansaction_values)
                     )
+  
+    @staticmethod
+    def get_for_member(id):
+
+        all_transactions = Transaction.objects.filter(member_id = id)
+
+        transansaction_values = map(lambda transaction: dict(
+                                                    id = transaction.id,
+                                                    name = transaction.member.full_name,
+                                                    email = transaction.member.user.email,
+                                                    address = transaction.member.address,
+                                                    city = transaction.member.city,
+                                                    phone = transaction.member.phone_number,
+                                                    country = transaction.member.country,
+                                                    balance = transaction.member.get_balance(),
+                                                    last_transaction = transaction.member.get_last_transaction(),
+                                                    date = transaction.date,
+                                                    amount = transaction.amount,
+                                                    type = transaction.transaction_type,
+
+
+                                                ),  all_transactions
+                            )
+        
+        return list(transansaction_values)

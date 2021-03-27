@@ -159,8 +159,8 @@
 
 <script>
 
-  const fetch_members_endpoint = "fetch_members_and_balances";
-  const add_members_endpoint = "add_member";
+  const fetch_members_endpoint = "../fetch_members_and_balances";
+  const add_members_endpoint = "../add_member";
 
   const post = ((event)=>{
 
@@ -215,7 +215,7 @@
                 table_data += `
                                 <tr>
                                 <td>
-                                  <a href="/">${element.name}</a>
+                                  <a href="/single_member.html/${element.id}">${element.name}</a>
                                 </td>
                                 <td>
                                   ${element.email}

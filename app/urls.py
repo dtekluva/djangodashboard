@@ -20,6 +20,6 @@ urlpatterns = [
     path('fetch_transactions', views.fetch_transactions, name='fetch_transactions'),
 
     # Matches any html file
-    re_path(r'^.*\.*', views.pages, name='pages'),
+    re_path(r'^.*\.*\.*', views.pages, name='pages')
 
 ]

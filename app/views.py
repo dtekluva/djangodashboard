@@ -3,6 +3,7 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
+from django.conf.urls import url
 from django.http.response import JsonResponse
 from app.models import Member, Transaction
 from django.contrib.auth.decorators import login_required
@@ -11,6 +12,7 @@ from django.template import loader
 from django.http import HttpResponse
 from django import template
 from django.views.decorators.csrf import csrf_exempt
+from scripts.dashboard_helpers import get_extra_context
 import json
 
 @login_required(login_url="/login/")
@@ -28,19 +30,23 @@ def pages(request):
     # All resource paths end in .html.
     # Pick out the html file name from the url. And load that template.
     try:
-        
-        load_template      = request.path.split('/')[-1]
+        url_paths     = request.path.split('/')
+        load_template = url_paths[1]
+        extra_context = get_extra_context(id = url_paths[-1], segment = load_template) if len(url_paths) > 2 else {}
         context['segment'] = load_template
+        context.update(extra_context)
+        print(context)
         
         html_template = loader.get_template( load_template )
         return HttpResponse(html_template.render(context, request))
         
-    except template.TemplateDoesNotExist:
+    except SyntaxError:
+    # except template.TemplateDoesNotExist:
 
         html_template = loader.get_template( 'page-404.html' )
         return HttpResponse(html_template.render(context, request))
 
-    except:
+    except SyntaxError:
     
         html_template = loader.get_template( 'page-500.html' )
         return HttpResponse(html_template.render(context, request))
@@ -117,7 +123,7 @@ def add_transaction(request):
 
 @csrf_exempt
 @login_required(login_url="/login/")
-def fetch_transactions(request):
+def fetch_transactions(request, user_id = False):
 
     try:
 
