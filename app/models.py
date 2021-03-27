@@ -79,7 +79,7 @@ class Member(models.Model):
     @staticmethod
     def get_all():
 
-        all_members = Member.objects.all()
+        all_members = Member.objects.all().order_by("-id")
 
         member_values = map(lambda member: dict(
                                                     id = member.id,
@@ -168,7 +168,7 @@ class Transaction(models.Model):
     @staticmethod
     def get_all():
 
-        all_transactions = Transaction.objects.all()
+        all_transactions = Transaction.objects.all().order_by("-date")
 
         transansaction_values = map(lambda transaction: dict(
                                                     id = transaction.id,
