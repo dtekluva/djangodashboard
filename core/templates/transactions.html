@@ -11,63 +11,45 @@
   <div class="col-md-8">
     <div class="card">
       <div class="card-header">
-        <h5 class="title">Add Member</h5>
+        <h5 class="title">Edit Profile</h5>
       </div>
       <div class="card-body">
         <form onsubmit="post(event)" id="form">
           <div class="row">
+            <div class="col-md-12 pr-md-1">
+              <div class="form-group">
+                <label>Member</label>
+                <!-- <input placeholder="Logan Del'Loreal" id="first_name" type="text" class="form-control"> -->
+                <select id="member" class="form-control" >
+                  <option selected>Select Transacting Member</option>
+                  <option value="1">One</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
             <div class="col-md-6 pr-md-1">
               <div class="form-group">
-                <label>First Name</label>
-                <input id="first_name" type="text" class="form-control">
+                <label for="amount">Amount</label>
+                <input id="amount" type="phone" class="form-control" value="0.00">
               </div>
             </div>
             <div class="col-md-6 pl-md-1">
               <div class="form-group">
-                <label>Last Name</label>
-                <input id="last_name" type="text" class="form-control">
+                <label for="exampleInputEmail1">Date</label>
+                <input id="date" type="date" class="form-control" value="">
               </div>
             </div>
           </div>
           <div class="row">
-            <div class="col-md-6 pr-md-1">
+            <div class="col-md-6">
               <div class="form-group">
-                <label for="exampleInputEmail1">Email address</label>
-                <input id="email" type="email" class="form-control" value="{{ request.user.email }}">
-              </div>
-            </div>
-            <div class="col-md-6 pl-md-1">
-              <div class="form-group">
-                <label for="exampleInputEmail1">Phone Number</label>
-                <input id="phone" type="phone" class="form-control" value="{{ request.user.email }}">
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12">
-              <div class="form-group">
-                <label>Address</label>
-                <input id="address" type="text" class="form-control" placeholder="Home Address" value="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09">
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-4 pr-md-1">
-              <div class="form-group">
-                <label>City</label>
-                <input id="city" type="text" class="form-control" placeholder="City" value="Mike">
-              </div>
-            </div>
-            <div class="col-md-4 px-md-1">
-              <div class="form-group">
-                <label>Country</label>
-                <input id="country" type="text" class="form-control" placeholder="Country" value="Andrew">
-              </div>
-            </div>
-            <div class="col-md-4 pl-md-1">
-              <div class="form-group">
-                <label>Postal Code (disabled)</label>
-                <input disabled="" type="number" class="form-control" placeholder="ZIP Code">
+                <label>Transaction Type</label>
+                <select id="transaction_type" class="form-control" >
+                  <option selected>Select Transaction Type</option>
+                  <option value="deposit">Deposit</option>
+                  <option value="withdrawal">Withdrawal</option>
+                </select>
               </div>
             </div>
           </div>
@@ -121,7 +103,7 @@
   <div class="col-md-12">
     <div class="card ">
       <div class="card-header">
-        <h4 class="card-title"> All Members </h4>
+        <h4 class="card-title"> Simple Table</h4>
       </div>
       <div class="card-body">
         <div class="table-responsive">
@@ -129,23 +111,23 @@
             <thead class=" text-primary">
               <tr>
                 <th>
-                  Name
+                  Member
                 </th>
                 <th>
-                  Email
-                </th>
-                <th>
-                  Last Transaction
+                  Type
                 </th>
                 <th>
                   Date
+                </th>
+                <th class="text-center">
+                  Amount
                 </th>
                 <th class="text-center">
                   Balance
                 </th>
               </tr>
             </thead>
-            <tbody id="member_table">
+            <tbody id="transaction_table">
               
             </tbody>
           </table>
@@ -160,32 +142,27 @@
 <script>
 
   const fetch_members_endpoint = "fetch_members_and_balances";
-  const add_members_endpoint = "add_member";
+  const fetch_transaction_endpoint = "fetch_transactions";
+  const add_transaction_endpoint = "add_transaction";
 
   const post = ((event)=>{
 
     event.preventDefault();
 
-    first_name = document.getElementById("first_name").value;
-    last_name  = document.getElementById("last_name").value;
-    email      = document.getElementById("email").value;
-    phone      = document.getElementById("phone").value;
-    address    = document.getElementById("address").value;
-    city       = document.getElementById("city").value;
-    country    = document.getElementById("country").value;
+    member = document.getElementById("member").value;
+    amount = document.getElementById("amount").value;
+    date   = document.getElementById("date").value;
+    transaction_type = document.getElementById("transaction_type").value;
 
     let formData = {};
-    formData['first_name'] = first_name;
-    formData['last_name'] = last_name;
-    formData['email'] = email;
-    formData['phone'] = phone;
-    formData['address'] = address;
-    formData['city'] = city;
-    formData['country'] = country;
+    formData['member'] = member;
+    formData['amount'] = amount;
+    formData['date']   = date;
+    formData['transaction_type']  = transaction_type;
 
     console.log(formData);
 
-    fetch( add_members_endpoint,
+    fetch( add_transaction_endpoint,
         {
             body: JSON.stringify(formData),
             method: "post"
@@ -208,39 +185,67 @@
           })
           .then((resp) => resp.json())
           .then(function(data) {
-            // console.log(data.all_members.data);
-            let table_data = ""
+            console.log(data.all_members.data);
+            let select_options = ""
 
             data.all_members.data.forEach((element)=>{
-                table_data += `
-                                <tr>
-                                <td>
-                                  ${element.name}
-                                </td>
-                                <td>
-                                  ${element.email}
-                                </td>
-                                <td>
-                                  ${element.last_transaction.amount}
-                                </td>
-                                <td>
-                                  ${element.last_transaction.date}
-                                </td>
-                                <td class="text-center">
-                                  ${element.balance}
-                                </td>
-                              </tr>
-                              `;
+                select_options += `
+                                    <option value = ${element.id}>
+                                        ${element.name}
+                                    </option>
+                                  `;
             });
 
-            document.getElementById("member_table").innerHTML += table_data;
-            // console.log(table_data);
+            document.getElementById("member").innerHTML += select_options;
+            // console.log(select_options);
           })
           .catch(function(error) {
             console.log(error);
           });
     });
 
+    const load_transactions = (()=>{
+
+    fetch(fetch_transaction_endpoint,
+        {
+            method: "get"
+        })
+        .then((resp) => resp.json())
+        .then(function(data) {
+          console.log("Here => ", data.all_transactions.data);
+          let select_options = ""
+
+          data.all_transactions.data.forEach((element)=>{
+              select_options += `
+              <tr>
+                  <td>
+                    ${element.name}
+                  </td>
+                  <td>
+                    ${element.type}
+                  </td>
+                  <td>
+                    ${element.date}
+                  </td>
+                  <td class="text-center">
+                    ${element.amount.toLocaleString()}
+                  </td>
+                  <td class="text-center">
+                    ${element.balance.toLocaleString()}
+                  </td>
+                </tr>
+                  `;
+             });
+
+          document.getElementById("transaction_table").innerHTML += select_options;
+          // console.log(select_options);
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    });
+        
+    load_transactions();
     load_members();
 </script>
 

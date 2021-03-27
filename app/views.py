@@ -4,7 +4,7 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from django.http.response import JsonResponse
-from app.models import Member
+from app.models import Member, Transaction
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import loader
@@ -68,7 +68,7 @@ def add_member(request):
 
 @csrf_exempt
 @login_required(login_url="/login/")
-def populate_members(request):
+def fetch_members_and_balances(request):
     context = {}
     # All resource paths end in .html.
     # Pick out the html file name from the url. And load that template.
@@ -90,3 +90,50 @@ def populate_members(request):
                                     "all_members": "",
                                     "status": False
                                 }, status=500)
+
+@csrf_exempt
+@login_required(login_url="/login/")
+def add_transaction(request):
+
+    try:
+
+        if request.method == 'POST': # If the form has been submitted...
+            
+            data = json.loads(request.body) 
+
+            print(data)
+
+            response = Transaction.add_transaction(**data)     
+            
+            return JsonResponse(response, status=200)
+        
+    except SyntaxError:
+
+        return JsonResponse({
+                                "all_members": "",
+                                "status": False
+                            }, status=500)
+
+
+@csrf_exempt
+@login_required(login_url="/login/")
+def fetch_transactions(request):
+
+    try:
+
+        if request.method == 'GET': # If the form has been submitted...
+            
+            all_transactions = Transaction.get_all()
+
+            return JsonResponse({
+                                    "all_transactions": all_transactions,
+                                    "status": True
+                                }, 
+                                status=200)
+        
+    except SyntaxError:
+
+        return JsonResponse({
+                                "all_transactions": "",
+                                "status": False
+                            }, status=500)

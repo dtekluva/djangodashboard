@@ -1,5 +1,5 @@
 
-
+{% if 'login' not in segment %}
     <div class="sidebar">
       <div class="sidebar-wrapper">
         
@@ -26,6 +26,12 @@
             <a href="/add_member.html">
               <i class="tim-icons icon-badge"></i>
               <p>Members</p>
+            </a>
+          </li>
+          <li class="{% if 'transaction' in segment %} active {% endif %} ">
+            <a href="/transactions.html">
+              <i class="tim-icons icon-coins"></i>
+              <p>Transactions</p>
             </a>
           </li>
           <!-- <li class="{% if 'icons' in segment %} active {% endif %}">
@@ -77,16 +83,17 @@
             </a>
           </li>
           {% else %}
-          <li class="active">
+          <!-- <li class="active">
             <a target="_blank" 
-               href="https://www.creative-tim.com/product/black-dashboard-pro-django">
+               href="#">
               <i class="tim-icons icon-spaceship"></i>
               <p>PRO Version</p>
             </a>
-          </li>   
+          </li>    -->
           {% endif %}
                     
         </ul>
         
       </div>
     </div>
+    {% endif %}

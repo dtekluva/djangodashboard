@@ -6,8 +6,8 @@ Copyright (c) 2019 - present AppSeed.us
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.deletion import CASCADE
-from django.db.models import Avg, Sum
-
+from scripts.time_helpers import convert_date
+from datetime import datetime
 # Create your models here.
        
 class Member(models.Model):
@@ -82,6 +82,7 @@ class Member(models.Model):
         all_members = Member.objects.all()
 
         member_values = map(lambda member: dict(
+                                                    id = member.id,
                                                     name = member.full_name,
                                                     email = member.user.email,
                                                     address = member.address,
@@ -136,3 +137,57 @@ class Transaction(models.Model):
     
     def __str__(self):
         return self.member.user.username  
+
+    def save(self, *args, **kwargs):
+        if self.transaction_type == "withdrawal":
+            self.amount *= -1  # make transaction amount negative
+        super(Transaction, self).save(*args, **kwargs)
+    
+    @staticmethod
+    def add_transaction(**details):
+
+        member_id = details["member"]
+        date = details["date"]
+        amount = float(details["amount"])
+        transaction_type = details["transaction_type"]
+
+        member = Member.objects.get(id = member_id)
+        member.save()
+        
+        transaction = Transaction(member = member,
+                                    amount = amount,
+                                    date = date,
+                                    transaction_type = transaction_type,
+                                )
+        transaction.save()
+
+        return {
+                "status":True
+                }
+
+    @staticmethod
+    def get_all():
+
+        all_transactions = Transaction.objects.all()
+
+        transansaction_values = map(lambda transaction: dict(
+                                                    id = transaction.id,
+                                                    name = transaction.member.full_name,
+                                                    email = transaction.member.user.email,
+                                                    address = transaction.member.address,
+                                                    city = transaction.member.city,
+                                                    phone = transaction.member.phone_number,
+                                                    country = transaction.member.country,
+                                                    balance = transaction.member.get_balance(),
+                                                    last_transaction = transaction.member.get_last_transaction(),
+                                                    date = transaction.date,
+                                                    amount = transaction.amount,
+                                                    type = transaction.transaction_type,
+
+
+                                                ),  all_transactions
+                            )
+        
+        return dict(
+                    data = list(transansaction_values)
+                    )
