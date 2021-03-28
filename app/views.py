@@ -143,3 +143,28 @@ def fetch_transactions(request, user_id = False):
                                 "all_transactions": "",
                                 "status": False
                             }, status=500)
+
+@csrf_exempt
+@login_required(login_url="/login/")
+def fetch_transactions_for_chart(request):
+
+    try:
+
+        if request.method == 'GET': # If the form has been submitted...
+            
+            
+            chart_transactions = Transaction.get_graph_data()
+            print("######################################", chart_transactions, sep="\n")
+
+            return JsonResponse({
+                                    "chart_transactions": chart_transactions,
+                                    "status": True
+                                }, 
+                                status=200)
+        
+    except SyntaxError:
+
+        return JsonResponse({
+                                "chart_transactions": "",
+                                "status": False
+                            }, status=500)

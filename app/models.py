@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.db.models.deletion import CASCADE
 from scripts.time_helpers import convert_date
 from datetime import datetime
+from itertools import groupby
 # Create your models here.
        
 class Member(models.Model):
@@ -236,3 +237,35 @@ class Transaction(models.Model):
                             )
         
         return list(transansaction_values)
+
+    @staticmethod
+    def get_graph_data():
+        #GET DATA FOR MONTHLY WITHDRAWALS AND DEPOSITS
+
+        withdrawals = Transaction.objects.filter(transaction_type = "withdrawal").only('date', 'amount').order_by('date')
+        month_withdrawals = {
+            k: sum(x.amount for x in g) 
+            for k, g in groupby(withdrawals, key=lambda i: i.date.strftime("%b").upper())
+        }
+
+        deposits = Transaction.objects.filter(transaction_type = "deposit").only('date', 'amount').order_by('date')
+        month_deposits = {
+            k: sum(x.amount for x in g) 
+            for k, g in groupby(deposits, key=lambda i: i.date.strftime("%b").upper())
+        }
+        print(month_withdrawals)
+        print(month_deposits)
+
+        all_months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+        chart_labels = all_months[datetime.now().month:] + all_months[:datetime.now().month]
+
+        chart_withdrawals = map(lambda month_name: month_withdrawals.get(month_name, 0), chart_labels)
+        chart_deposits    = map(lambda month_name: month_deposits.get(month_name, 0), chart_labels)
+
+        response = dict(
+                        months      = chart_labels,
+                        withdrawals = list(chart_withdrawals),          
+                        deposits    = list(chart_deposits)            
+                    )
+
+        return response

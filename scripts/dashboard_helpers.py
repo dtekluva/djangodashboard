@@ -13,6 +13,10 @@ def get_extra_context(**params):
                 member_details = Member.get_single(params.get("id")),
                 member_transactions = Transaction.get_for_member(params.get("id"))
               )
+              
+  elif "index" in params.get("segment", ""):
+
+    return Transaction.get_graph_data()
 
   else:
 
