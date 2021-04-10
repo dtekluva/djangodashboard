@@ -9,6 +9,8 @@ from django.db.models.deletion import CASCADE
 from scripts.time_helpers import convert_date
 from datetime import datetime
 from itertools import groupby
+from django.db.models import Sum
+
 # Create your models here.
        
 class Member(models.Model):
@@ -190,6 +192,8 @@ class Transaction(models.Model):
     def get_all():
 
         all_transactions = Transaction.objects.all().order_by("-date")
+        withdrawals = sum(all_transactions.filter(transaction_type = "withdrawal").values_list('amount', flat=True))
+        deposits = sum(all_transactions.filter(transaction_type = "deposit").values_list('amount', flat=True))
 
         transansaction_values = map(lambda transaction: dict(
                                                     id = transaction.id,
@@ -210,13 +214,19 @@ class Transaction(models.Model):
                             )
         
         return dict(
-                    data = list(transansaction_values)
+                    data = list(transansaction_values),
+                    totals = {
+                                "withdrawals":withdrawals,
+                                "deposits": deposits
+                            }
                     )
   
     @staticmethod
     def get_for_member(id):
 
         all_transactions = Transaction.objects.filter(member_id = id)
+        withdrawals = sum(all_transactions.filter(transaction_type = "withdrawal").values_list('amount', flat=True))
+        deposits = sum(all_transactions.filter(transaction_type = "deposit").values_list('amount', flat=True))
 
         transansaction_values = map(lambda transaction: dict(
                                                     id = transaction.id,
@@ -235,8 +245,15 @@ class Transaction(models.Model):
 
                                                 ),  all_transactions
                             )
-        
-        return list(transansaction_values)
+     
+     
+        return dict(
+                    data = list(transansaction_values),
+                    totals = {
+                                "withdrawals":withdrawals,
+                                "deposits": deposits
+                            }
+                    )
 
     @staticmethod
     def get_graph_data():
@@ -253,8 +270,6 @@ class Transaction(models.Model):
             k: sum(x.amount for x in g) 
             for k, g in groupby(deposits, key=lambda i: i.date.strftime("%b").upper())
         }
-        print(month_withdrawals)
-        print(month_deposits)
 
         all_months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
         chart_labels = all_months[datetime.now().month:] + all_months[:datetime.now().month]

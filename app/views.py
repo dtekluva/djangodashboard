@@ -35,7 +35,6 @@ def pages(request):
         extra_context = get_extra_context(id = url_paths[-1], segment = load_template) if len(url_paths) > 2 else {}
         context['segment'] = load_template
         context.update(extra_context)
-        print(context)
         
         html_template = loader.get_template( load_template )
         return HttpResponse(html_template.render(context, request))
@@ -107,8 +106,6 @@ def add_transaction(request):
             
             data = json.loads(request.body) 
 
-            print(data)
-
             response = Transaction.add_transaction(**data)     
             
             return JsonResponse(response, status=200)
@@ -154,7 +151,6 @@ def fetch_transactions_for_chart(request):
             
             
             chart_transactions = Transaction.get_graph_data()
-            print("######################################", chart_transactions, sep="\n")
 
             return JsonResponse({
                                     "chart_transactions": chart_transactions,

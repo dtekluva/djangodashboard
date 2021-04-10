@@ -250,7 +250,9 @@
       <div class="col-md-12">
         <div class="card ">
           <div class="card-header">
-            <h4 class="card-title"> Most Recent Transactions Table</h4>
+            <!-- <h4 class="card-title"> Recent Transactions </h4> -->
+            <h4 class="card-title text-right" id="total_withdrawals"> Withdrawals : ₦0</h4>
+            <h4 class="card-title text-right" id="total_deposits"> Lodgements  : ₦0</h4>
           </div>
           <div class="card-body">
             <div class="table-responsive">
@@ -305,6 +307,10 @@
       })
       .then((resp) => resp.json())
       .then(function(data) {
+
+        document.getElementById("total_deposits").innerText = `Deposits : ₦${data.all_transactions.totals.deposits.toLocaleString()}` 
+        document.getElementById("total_withdrawals").innerText = `Withdrawals : ₦${data.all_transactions.totals.withdrawals.toLocaleString()}`
+
         // console.log("Here => ", data.all_transactions.data);
         let select_options = ""
         let last_20_transactions = data.all_transactions.data.slice(0,20) //GET ONLY LAST 20 TRANSACTIONS.

@@ -11,7 +11,7 @@
   <div class="col-md-8">
     <div class="card">
       <div class="card-header">
-        <h5 class="title">Edit Profile</h5>
+        <h5 class="title">Add New Transaction</h5>
       </div>
       <div class="card-body">
         <form onsubmit="post(event)" id="form">
@@ -103,7 +103,8 @@
   <div class="col-md-12">
     <div class="card ">
       <div class="card-header">
-        <h4 class="card-title"> Transactions Table</h4>
+        <h4 class="card-title text-right" id="total_withdrawals"> Withdrawals : ₦0</h4>
+        <h4 class="card-title text-right" id="total_deposits"> Lodgements  : ₦0</h4>
       </div>
       <div class="card-body">
         <div class="table-responsive">
@@ -213,6 +214,9 @@
         .then((resp) => resp.json())
         .then(function(data) {
           // console.log("Here => ", data.all_transactions.data);
+          document.getElementById("total_deposits").innerText = `Deposits : ₦${data.all_transactions.totals.deposits.toLocaleString()}` 
+          document.getElementById("total_withdrawals").innerText = `Withdrawals : ₦${data.all_transactions.totals.withdrawals.toLocaleString()}`
+
           let select_options = ""
 
           data.all_transactions.data.forEach((element)=>{

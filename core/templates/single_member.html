@@ -33,7 +33,7 @@
             <div class="col-md-6 pr-md-1">
               <div class="form-group">
                 <label for="exampleInputEmail1">Email address</label>
-                <input id="email" type="email" class="form-control" value="{{ request.user.email }}">
+                <input id="email" type="email" class="form-control" value="{{ member_details.email }}">
               </div>
             </div>
             <div class="col-md-6 pl-md-1">
@@ -121,7 +121,9 @@
   <div class="col-md-12">
     <div class="card ">
       <div class="card-header">
-        <h4 class="card-title"> Transactions Table</h4>
+        <!-- <h4 class="card-title"> Transactions Table</h4> -->
+        <h4 class="card-title text-right"> Withdrawals : ₦{{member_totals.withdrawals}}</h4>
+        <h4 class="card-title text-right"> Lodgements  : ₦{{member_totals.deposits}}</h4>
       </div>
       <div class="card-body">
         <div class="table-responsive">
