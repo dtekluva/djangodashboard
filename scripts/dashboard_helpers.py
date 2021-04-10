@@ -5,13 +5,15 @@ import random, os, json
 from datetime import datetime
 
 def get_extra_context(**params):
-  print(params)
 
   if "single_member" in params.get("segment", ""):
 
+    member_data = Transaction.get_for_member(params.get("id"))
+
     return dict(
                 member_details = Member.get_single(params.get("id")),
-                member_transactions = Transaction.get_for_member(params.get("id"))
+                member_transactions = member_data.get("data"),
+                member_totals = member_data.get("totals"),
               )
               
   elif "index" in params.get("segment", ""):
@@ -22,5 +24,6 @@ def get_extra_context(**params):
 
     return dict(
                 member_details = {},
-                member_transactions = {}
+                member_transactions = {},
+                member_totals = {}
               )
